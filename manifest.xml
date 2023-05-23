@@ -1,0 +1,15 @@
+<package>
+  <description brief="MC-VEO">
+  An Event and Frame based Visual Odometry
+  </description>
+  <author>2010195@tongji.edu.cn</author>
+  <license>GPL v3.0 or later</license>
+  <depend package="base/cmake" />
+  <depend package="slam/mc-veo" />
+  <depend package="yaml-cpp" />
+  <depend package="perception/frame_helper" />
+  <depend package="base/orogen/types" />
+  <depend package="drivers/orogen/aggregator" />
+  <!-- needs_opt for RelWithDebInfo  stable for Release, debug for Debug and stable for Release-->
+  <tags>needs_opt</tags> <!--RelWithDebInfo -->
+</package>
