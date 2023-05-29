@@ -24,7 +24,7 @@
 #ifndef MC_VEO_TASK_TASK_HPP
 #define MC_VEO_TASK_TASK_HPP
 
-#include "mc-veo/TaskBase.hpp"
+#include "mc_veo/TaskBase.hpp"
 
 /** MC-VEO Library **/
 #include <mc-veo/MC-VEO.h>
