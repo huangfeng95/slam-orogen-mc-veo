@@ -47,7 +47,7 @@ namespace mc_veo{
      * The name of a TaskContext is primarily defined via:
      \verbatim
      deployment 'deployment_name'
-         task('custom_task_name','mc-veo::Task')
+         task('custom_task_name','mc_veo:Task')
      end
      \endverbatim
      *  It can be dynamically adapted when the deployment is called with a prefix argument.
