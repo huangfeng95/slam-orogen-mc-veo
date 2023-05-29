@@ -1,4 +1,4 @@
-name "mc-veo"
+name "mc_veo"
 # Optionally declare the version number
 # version "0.1"
 
@@ -94,7 +94,7 @@ task_context "Task" do
         doc 'Mosaic of all Keyframes with the inverse depth of active points'
 
     ####### Poses #########
-    output_port('pose_w_kfs', 'mc-veo::VectorKFs').
+    output_port('pose_w_kfs', 'mc_veo::VectorKFs').
         doc 'Sliding window of keyframe poses w.r.t world (T_w_kf[i])'
 
     output_port('pose_w_ef', '/base/samples/RigidBodyState').
@@ -108,17 +108,17 @@ task_context "Task" do
         doc 'Global map in the world frame'
 
     ####### Maps #########
-    output_port('model_frame_vector', 'mc-veo::ModelFrameVector').
+    output_port('model_frame_vector', 'mc_veo::ModelFrameVector').
         doc 'Model in vector form (with timestamp)'
 
-    output_port('event_frame_vector', 'mc-veo::EventFrameVector').
+    output_port('event_frame_vector', 'mc_veo::EventFrameVector').
         doc 'Event frame in vector form (with timestamp)'
 
     ####### Infos #########
-    output_port('tracker_info', 'mc-veo::TrackerInfo').
+    output_port('tracker_info', 'mc_veo::TrackerInfo').
         doc 'Tracker information'
 
-    output_port('bundles_info', 'mc-veo::PBAInfo').
+    output_port('bundles_info', 'mc_veo::PBAInfo').
         doc 'Bundle Adjustement information'
 
     runtime_states :INITIALIZING, :OPTIMIZING, :LOGGING
