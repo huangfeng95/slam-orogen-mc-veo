@@ -1,6 +1,6 @@
 # Generated from orogen/lib/orogen/templates/tasks/CMakeLists.txt
 
-include(mc-veoTaskLib)
+include(mc_veoTaskLib)
 ADD_LIBRARY(${MC-VEO_TASKLIB_NAME} SHARED
     ${MC-VEO_TASKLIB_SOURCES})
 add_dependencies(${MC-VEO_TASKLIB_NAME}
