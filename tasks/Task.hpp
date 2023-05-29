@@ -160,7 +160,7 @@ namespace mc_veo{
          * \param name Name of the task. This name needs to be unique to make it identifiable via nameservices.
          * \param initial_state The initial TaskState of the TaskContext. Default is Stopped state.
          */
-        Task(std::string const& name = "mc_veoTask");
+        Task(std::string const& name = "mc_veo::Task");
 
         /** Default deconstructor of Task
          */
