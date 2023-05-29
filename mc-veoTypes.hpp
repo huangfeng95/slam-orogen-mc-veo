@@ -21,8 +21,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MC-VEO_TYPES_HPP
-#define MC-VEO_TYPES_HPP
+#ifndef MC_VEO_TYPES_HPP
+#define MC_VEO_TYPES_HPP
 
 
 #include <mc-veo/tracking/Config.hpp>
@@ -40,7 +40,7 @@
  * which case you do not need this file
  */
 
-namespace mc-veo {
+namespace mc_veo {
 
     struct DataLoaderConfig
     {
@@ -49,13 +49,13 @@ namespace mc-veo {
         double overlap;
     };
 
-    struct MC-VEOConfiguration
+    struct MC_VEOConfiguration
     {
         DataLoaderConfig data_loader;
-        ::mc-veo::tracking::Config tracker;
-        ::mc-veo::mapping::Config mapping;
-        ::mc-veo::bundles::Config bundles;
-        ::mc-veo::recorder::Config recorder;
+        ::mc_veo::tracking::Config tracker;
+        ::mc_veo::mapping::Config mapping;
+        ::mc_veo::bundles::Config bundles;
+        ::mc_veo::recorder::Config recorder;
     };
 
     struct VectorKFs
@@ -76,8 +76,8 @@ namespace mc-veo {
         std::vector<double> data;
     };
 
-    typedef mc-veo::tracking::TrackerInfo TrackerInfo;
-    typedef mc-veo::bundles::PBAInfo PBAInfo;
+    typedef mc_veo::tracking::TrackerInfo TrackerInfo;
+    typedef mc_veo::bundles::PBAInfo PBAInfo;
 }
 
 #endif

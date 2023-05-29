@@ -29,7 +29,7 @@
 
 #include "Task.hpp"
 
-using namespace mc-veo;
+using namespace mc_veo;
 
 
 #define DEBUG_PRINTS 1
@@ -53,48 +53,48 @@ void Task::eventsCallback(const base::Time &ts, const ::base::samples::EventArra
     this->events.insert(this->events.end(), events_sample.events.begin(), events_sample.events.end());
 
     /** Create an event frame **/
-    if (this->events.size() >= this->mc-veo_config.data_loader.num_events)
+    if (this->events.size() >= this->mc_veo_config.data_loader.num_events)
     {
         #ifdef DEBUG_PRINTS
         ::base::Time first_ts = this->events[0].ts;
-        ::base::Time last_ts = this->events[this->mc-veo_config.data_loader.num_events-1].ts;
+        ::base::Time last_ts = this->events[this->mc_veo_config.data_loader.num_events-1].ts;
         std::cout<<"** [MC-VEO_TASK EVENTS] Processing events from["<<first_ts.toSeconds()<<"] to["<<last_ts.toSeconds()<<"] size:"<<this->events.size()<<std::endl;
         #endif
 
         /** Move data (no copy) **/
         std::vector<::base::samples::Event> ef_events;
-        std::move(this->events.begin(), this->events.begin()+this->mc-veo_config.data_loader.num_events, std::back_inserter(ef_events)); 
+        std::move(this->events.begin(), this->events.begin()+this->mc_veo_config.data_loader.num_events, std::back_inserter(ef_events)); 
 
         /** Clean events in the original buffer depending in the overlap percentage.
          * std move only moves (it does not delete) **/
-        int next_element = (1.0 - this->mc-veo_config.data_loader.overlap)*this->mc-veo_config.data_loader.num_events;
+        int next_element = (1.0 - this->mc_veo_config.data_loader.overlap)*this->mc_veo_config.data_loader.num_events;
         this->events.erase(this->events.begin(), this->events.begin()+next_element);
         #ifdef DEBUG_PRINTS
         std::cout<<"** [MC-VEO_TASK EVENTS] ef_events at["<<ef_events[0].ts.toMicroseconds()<<"] size:"<<ef_events.size()<<std::endl;
-        std::cout<<"** [MC-VEO_TASK EVENTS] overlap ["<< this->mc-veo_config.data_loader.overlap*100.0 <<"] this->events at["<<this->events[0].ts.toMicroseconds()<<"] size:"<<this->events.size()<<std::endl;
+        std::cout<<"** [MC-VEO_TASK EVENTS] overlap ["<< this->mc_veo_config.data_loader.overlap*100.0 <<"] this->events at["<<this->events[0].ts.toMicroseconds()<<"] size:"<<this->events.size()<<std::endl;
         #endif
 
         auto t1 = std::chrono::high_resolution_clock::now();
         /** Create the Event Frame **/
-        if (this->mc-veo_config.data_loader.motion_compensation)
+        if (this->mc_veo_config.data_loader.motion_compensation)
         {
             if (!(this->initialized))
             {
                 this->event_frame->create(this->ef_idx, ef_events, this->cam_calib.cam1,
-                                this->mc-veo_config.tracker.options.max_num_iterations.size(),
+                                this->mc_veo_config.tracker.options.max_num_iterations.size(),
                                 base::Affine3d::Identity(), this->newcam->out_size);
             }
             else if (this->initialized)
             {
                 this->event_frame->create_aligned(this->ef_idx, ef_events, this->cam_calib.cam1,
-                                this->mc-veo_config.tracker.options.max_num_iterations.size(),
+                                this->mc_veo_config.tracker.options.max_num_iterations.size(),
                                 this->newcam->out_size, this->pose_w_ef);
             }
         }
         else
         {
             this->event_frame->create(this->ef_idx, ef_events, this->cam_calib.cam1,
-                        this->mc-veo_config.tracker.options.max_num_iterations.size(),
+                        this->mc_veo_config.tracker.options.max_num_iterations.size(),
                         base::Affine3d::Identity(), this->newcam->out_size);
         }
         auto t2 = std::chrono::high_resolution_clock::now();
@@ -110,7 +110,7 @@ void Task::eventsCallback(const base::Time &ts, const ::base::samples::EventArra
             auto start = std::chrono::high_resolution_clock::now();
             /** Event to Image alignment T_kf_ef delta pose **/
             ::base::Transform3d T_kf_ef = this->pose_kf_ef.getTransform(); // initialize to current estimate
-            if (this->mc-veo_config.tracker.accelerate)
+            if (this->mc_veo_config.tracker.accelerate)
             {
                 std::cout<<"** [MC-VEO_TASK EVENTS] accelerate"<<std::endl;
                 this->eventsToImageAlignment(this->pose_w_kf.getTransform(), ef_events, T_kf_ef); // MC-VEO tracker estimate
@@ -273,18 +273,18 @@ bool Task::configureHook()
 
     /** Read the Yaml configuration file **/
     YAML::Node config = YAML::LoadFile(_config_file.get());
-    mc-veo_config.data_loader = this->readDataLoaderConfig(config["data_loader"]);
-    this->mc-veo_config.tracker = ::mc-veo::tracking::readTrackingConfig(config["tracker"]);
-    this->mc-veo_config.mapping = ::mc-veo::mapping::readMappingConfig(config["mapping"]);
-    this->mc-veo_config.bundles = ::mc-veo::bundles::readBundlesConfig(config["bundles"]);
+    mc_veo_config.data_loader = this->readDataLoaderConfig(config["data_loader"]);
+    this->mc_veo_config.tracker = ::mc_veo::tracking::readTrackingConfig(config["tracker"]);
+    this->mc_veo_config.mapping = ::mc_veo::mapping::readMappingConfig(config["mapping"]);
+    this->mc_veo_config.bundles = ::mc_veo::bundles::readBundlesConfig(config["bundles"]);
 
     /** Read the camera calibration **/
     YAML::Node node_info = YAML::LoadFile(_calib_file.get());
-    this->cam_calib = mc-veo::calib::readDualCalibration(node_info);
+    this->cam_calib = mc_veo::calib::readDualCalibration(node_info);
 
     /** Set cameras calibration **/
-    this->cam0 = std::make_shared<mc-veo::calib::Camera>(this->cam_calib.cam0);
-    this->cam1 = std::make_shared<mc-veo::calib::Camera>(this->cam_calib.cam1, this->cam_calib.extrinsics.rotation);
+    this->cam0 = std::make_shared<mc_veo::calib::Camera>(this->cam_calib.cam0);
+    this->cam1 = std::make_shared<mc_veo::calib::Camera>(this->cam_calib.cam1, this->cam_calib.extrinsics.rotation);
 
     std::cout<<"** [MC-VEO_TASK CONFIG] Configuration CAM0: **"<<std::endl;
     std::cout<<"Model: "<<cam_calib.cam0.distortion_model<<std::endl;
@@ -301,7 +301,7 @@ bool Task::configureHook()
     std::cout<<"R:\n"<<cam1->R<<std::endl;
 
     cv::Size out_size{this->cam_calib.cam0.out_width, this->cam_calib.cam0.out_height};
-    this->newcam = std::make_shared<mc-veo::calib::Camera>(::mc-veo::calib::setNewCamera(*(this->cam0), *(this->cam1), out_size));
+    this->newcam = std::make_shared<mc_veo::calib::Camera>(::mc_veo::calib::setNewCamera(*(this->cam0), *(this->cam1), out_size));
 
     std::cout<<"** [MC-VEO_TASK CONFIG] Configuration NEWCAM: **"<<std::endl;
     std::cout<<"Size: "<<newcam->size<<std::endl;
@@ -310,7 +310,7 @@ bool Task::configureHook()
     std::cout<<"D:\n"<<newcam->D<<std::endl;
     std::cout<<"R:\n"<<newcam->R<<std::endl;
 
-    ::mc-veo::calib::getMapping(*cam0, *cam1, *newcam);
+    ::mc_veo::calib::getMapping(*cam0, *cam1, *newcam);
     std::cout<<"cam0.mapx: "<<cam0->mapx.rows<<" x "<<cam0->mapx.cols<<std::endl;
     std::cout<<"cam0.mapy: "<<cam0->mapy.rows<<" x "<<cam0->mapy.cols<<std::endl;
     std::cout<<"cam1.mapx: "<<cam1->mapx.rows<<" x "<<cam1->mapx.cols<<std::endl;
@@ -344,10 +344,10 @@ bool Task::configureHook()
     std::cout<<"** [MC-VEO CONFIG] cyl: "<<this->calib->cyl()<<" cyli: "<<this->calib->cyli()<<std::endl;
 
     /** DSO Settings **/
-    dso::setting_desiredPointDensity = this->mc-veo_config.mapping.num_desired_points;
-    dso::setting_desiredImmatureDensity = (this->mc-veo_config.tracker.percent_points/100.0) * (this->newcam->out_size.height *this->newcam->out_size.width);
-    dso::setting_minFrames = this->mc-veo_config.bundles.window_size;
-    dso::setting_maxFrames = this->mc-veo_config.bundles.window_size;
+    dso::setting_desiredPointDensity = this->mc_veo_config.mapping.num_desired_points;
+    dso::setting_desiredImmatureDensity = (this->mc_veo_config.tracker.percent_points/100.0) * (this->newcam->out_size.height *this->newcam->out_size.width);
+    dso::setting_minFrames = this->mc_veo_config.bundles.window_size;
+    dso::setting_maxFrames = this->mc_veo_config.bundles.window_size;
     dso::setting_maxOptIterations=6;
     dso::setting_minOptIterations=1;
     dso::setting_logStuff = false;
@@ -355,7 +355,7 @@ bool Task::configureHook()
     std::cout<<"** [MC-VEO CONFIG] global map num points: "<<dso::setting_desiredPointDensity
             <<" local map num points "<<dso::setting_desiredImmatureDensity<<std::endl;
     std::cout<<"** [MC-VEO CONFIG] Keyframes sliding window size: "<<dso::setting_maxFrames<<std::endl;
-    std::cout<<"** [MC-VEO CONFIG] Point Relative Baseline: "<<this->mc-veo_config.mapping.points_rel_baseline<<std::endl;
+    std::cout<<"** [MC-VEO CONFIG] Point Relative Baseline: "<<this->mc_veo_config.mapping.points_rel_baseline<<std::endl;
 
     return true;
 }
@@ -394,13 +394,13 @@ bool Task::startHook()
     this->initializer = std::make_shared<dso::CoarseInitializer>(dso::wG[0], dso::hG[0]);
 
     /* Event-based Tracker (MC-VEO) **/
-    this->event_tracker = std::make_shared<::mc-veo::tracking::Tracker>(this->mc-veo_config.tracker);
+    this->event_tracker = std::make_shared<::mc_veo::tracking::Tracker>(this->mc_veo_config.tracker);
 
     /** KeyFrame (MC-VEO) **/
-    this->key_frame = std::make_shared<mc-veo::tracking::KeyFrame>(*(this->cam0), *(this->newcam), this->cam_calib.cam0.distortion_model);
+    this->key_frame = std::make_shared<mc_veo::tracking::KeyFrame>(*(this->cam0), *(this->newcam), this->cam_calib.cam0.distortion_model);
 
     /** EventFrame (MC-VEO) **/
-    this->event_frame = std::make_shared<mc-veo::tracking::EventFrame>(*(this->cam1), *(this->newcam), this->cam_calib.cam1.distortion_model);
+    this->event_frame = std::make_shared<mc_veo::tracking::EventFrame>(*(this->cam1), *(this->newcam), this->cam_calib.cam1.distortion_model);
 
     /** Image-based Tracker constructor (DSO) **/
     this->image_tracker = std::make_shared<dso::CoarseTracker>(dso::wG[0], dso::hG[0]);
@@ -410,7 +410,7 @@ bool Task::startHook()
     this->selection_map = new float[dso::wG[0]*dso::hG[0]];
     this->pixel_selector = std::make_shared<dso::PixelSelector>(dso::wG[0], dso::hG[0]);
     this->coarse_distance_map = std::make_shared<dso::CoarseDistanceMap>(dso::wG[0], dso::hG[0]);
-    this->depthmap = std::make_shared<mc-veo::mapping::IDepthMap2d>(this->cam_calib.cam0.intrinsics);//Depthmap is in the original RGB frame
+    this->depthmap = std::make_shared<mc_veo::mapping::IDepthMap2d>(this->cam_calib.cam0.intrinsics);//Depthmap is in the original RGB frame
 
     /** Bundles constructor **/
     this->bundles = std::make_shared<dso::EnergyFunctional>();
@@ -464,9 +464,9 @@ void Task::cleanupHook()
 
 }
 
-::mc-veo::DataLoaderConfig Task::readDataLoaderConfig(YAML::Node config)
+::mc_veo::DataLoaderConfig Task::readDataLoaderConfig(YAML::Node config)
 {
-    ::mc-veo::DataLoaderConfig dt_config;
+    ::mc_veo::DataLoaderConfig dt_config;
 
     /** Read the number of events to read **/
     dt_config.num_events = config["num_events"].as<size_t>();
@@ -676,7 +676,7 @@ bool Task::eventsToImageAlignment(const std::vector<::base::samples::Event> &eve
     bool success = false;
     for (int i=this->event_frame->event_frame.size()-1; i>=0; --i)
     {
-        success = this->event_tracker->optimize(i, &(this->event_frame->event_frame[i]), T_kf_ef, ::mc-veo::tracking::MAD);
+        success = this->event_tracker->optimize(i, &(this->event_frame->event_frame[i]), T_kf_ef, ::mc_veo::tracking::MAD);
     }
 
     /** Track the points and remove the ones out of the image plane **/
@@ -700,7 +700,7 @@ bool Task::eventsToImageAlignment(const Eigen::Affine3d &pose_w_kf,const std::ve
     bool success = false;
     for (int i=this->event_frame->event_frame.size()-1; i>=0; --i)
     {
-        success = this->event_tracker->optimize(i, this->event_frame->time.toSeconds(), pose_w_kf, &(this->event_frame->event_frame[i]), T_kf_ef, ::mc-veo::tracking::MAD);
+        success = this->event_tracker->optimize(i, this->event_frame->time.toSeconds(), pose_w_kf, &(this->event_frame->event_frame[i]), T_kf_ef, ::mc_veo::tracking::MAD);
     }
 
     /** Track the points and remove the ones out of the image plane **/
@@ -729,7 +729,7 @@ void Task::setPrecalcValues()
 void Task::track(dso::ImageAndExposure* image, int id)
 {
     /** Skipping frames for the paper **/
-    /*if (this->frame_hessians.size() == this->mc-veo_config.bundles.window_size && (this->frame_idx % 10) != 0)
+    /*if (this->frame_hessians.size() == this->mc_veo_config.bundles.window_size && (this->frame_idx % 10) != 0)
     {
         std::cout<<"[DSO_TASK FRAME] JUMPING FRAME: "<<this->frame_idx <<std::endl;
         return;
@@ -1831,7 +1831,7 @@ std::vector<dso::VecX> Task::getNullspaces(
     return nullspaces_x0_pre;
 }
 
-void Task::makeNewTraces(dso::FrameHessian* newFrame, ::mc-veo::mapping::IDepthMap2d *depthmap)
+void Task::makeNewTraces(dso::FrameHessian* newFrame, ::mc_veo::mapping::IDepthMap2d *depthmap)
 {
     /** Get the num points according to the map selection **/
     this->pixel_selector->allowFast = true;
@@ -1846,10 +1846,10 @@ void Task::makeNewTraces(dso::FrameHessian* newFrame, ::mc-veo::mapping::IDepthM
     depthmap->fromPoints(this->getPoints(dso::SE3ToBaseTransform(newFrame->shell->camToWorld).inverse()), cv::Size(dso::wG[0], dso::hG[0]));
 
     /** Create a KD-Tree to search the initial value **/
-    ::mc-veo::mapping::KDTree<mc-veo::mapping::Point2d> kdtree(depthmap->coord);
+    ::mc_veo::mapping::KDTree<mc_veo::mapping::Point2d> kdtree(depthmap->coord);
 
     /** The coordinates of the points in the new Keyframe **/
-    std::vector<::mc-veo::mapping::Point2d> coord;
+    std::vector<::mc_veo::mapping::Point2d> coord;
 
     /** The initial inverse depth of the points in the new Keyframe **/
     std::vector<double> idp;
@@ -1860,7 +1860,7 @@ void Task::makeNewTraces(dso::FrameHessian* newFrame, ::mc-veo::mapping::IDepthM
         int i = x+y*dso::wG[0];
         if(this->selection_map[i]==0) continue;
 
-        auto point = mc-veo::mapping::Point2d(x, y); //Get the selected point coordinate
+        auto point = mc_veo::mapping::Point2d(x, y); //Get the selected point coordinate
 
         /** Index of the closest points **/
         const int idx = kdtree.nnSearch(point);
@@ -2380,7 +2380,7 @@ void Task::outputPoseKF(const dso::FrameHessian *current_kf, const base::Time &t
 void Task::outputPoseKFs(const base::Time &timestamp)
 {
     /** Write sliding window KF poses port: T_w_kf[i] **/
-    mc-veo::VectorKFs pose_kfs;
+    mc_veo::VectorKFs pose_kfs;
     pose_kfs.kfs.clear();
     pose_kfs.time = timestamp;
 
@@ -2411,12 +2411,12 @@ void Task::outputPoseKFs(const base::Time &timestamp)
 
 void Task::outputTrackerInfo(const ::base::Time &timestamp)
 {
-    mc-veo::TrackerInfo tracker_info= this->event_tracker->getInfo();
+    mc_veo::TrackerInfo tracker_info= this->event_tracker->getInfo();
     tracker_info.time = timestamp;
     _tracker_info.write(tracker_info);
 }
 
-void Task::outputEventFrameViz(const std::shared_ptr<mc-veo::tracking::EventFrame> &event_frame)
+void Task::outputEventFrameViz(const std::shared_ptr<mc_veo::tracking::EventFrame> &event_frame)
 {
     /** Prepare output port image **/
     RTT::extras::ReadOnlyPointer<base::samples::frame::Frame> event_img;
@@ -2447,7 +2447,7 @@ void Task::outputEventFrameViz(const std::shared_ptr<mc-veo::tracking::EventFram
     _event_frame.write(event_img);
 
     /** Write the Event Frame Vector **/
-    ::mc-veo::EventFrameVector event_frame_vector;
+    ::mc_veo::EventFrameVector event_frame_vector;
     event_frame_vector.time = event_frame->time;
     event_frame_vector.data = event_frame->event_frame[0];
     _event_frame_vector.write(event_frame_vector);
@@ -2476,7 +2476,7 @@ void Task::outputEventFrameViz(const std::shared_ptr<mc-veo::tracking::EventFram
     _residuals_frame.write(residuals_img);
 }
 
-void Task::outputGenerativeModelFrameViz(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp)
+void Task::outputGenerativeModelFrameViz(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp)
 {
     /** Model image **/
     RTT::extras::ReadOnlyPointer<base::samples::frame::Frame> model;
@@ -2503,7 +2503,7 @@ void Task::outputGenerativeModelFrameViz(const std::shared_ptr<::mc-veo::trackin
     _model_frame.write(model);
 
     /** Write Model frame in vector form **/
-    mc-veo::ModelFrameVector model_frame_vector;
+    mc_veo::ModelFrameVector model_frame_vector;
     model_frame_vector.time = timestamp;
     for (int row=0; row<model_img.rows; row++)
     {
@@ -2516,7 +2516,7 @@ void Task::outputGenerativeModelFrameViz(const std::shared_ptr<::mc-veo::trackin
     _model_frame_vector.write(model_frame_vector);
 }
 
-void Task::outputInvDepthAndLocalMap(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp)
+void Task::outputInvDepthAndLocalMap(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp)
 {
     RTT::extras::ReadOnlyPointer<base::samples::frame::Frame> inv_depth_img;
     ::base::samples::frame::Frame *img = new ::base::samples::frame::Frame();
@@ -2546,14 +2546,14 @@ void Task::outputInvDepthAndLocalMap(const std::shared_ptr<::mc-veo::tracking::K
     this->outputLocalMap(keyframe, idp, model);
 }
 
-void Task::outputOpticalFlowFrameViz(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp)
+void Task::outputOpticalFlowFrameViz(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp)
 {
     RTT::extras::ReadOnlyPointer<base::samples::frame::Frame> of_img;
     ::base::samples::frame::Frame *img = new ::base::samples::frame::Frame();
     of_img.reset(img);
 
     /** Get the optical flow **/
-    cv::Mat optical_flow = mc-veo::utils::flowArrowsOnImage(keyframe->img, keyframe->coord,
+    cv::Mat optical_flow = mc_veo::utils::flowArrowsOnImage(keyframe->img, keyframe->coord,
                                                 keyframe->tracks, cv::Vec3b(0.0, 255.0, 0.0) /*BGR*/, 10);
 
     /** Output the optical flow image **/
@@ -2565,7 +2565,7 @@ void Task::outputOpticalFlowFrameViz(const std::shared_ptr<::mc-veo::tracking::K
     _of_frame.write(of_img);
 }
 
-void Task::outputGradientsFrameViz(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp)
+void Task::outputGradientsFrameViz(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp)
 {
     /** Gradient along x-axis **/
     RTT::extras::ReadOnlyPointer<base::samples::frame::Frame> grad_x_img;
@@ -2619,7 +2619,7 @@ void Task::outputGradientsFrameViz(const std::shared_ptr<::mc-veo::tracking::Key
     //_mag_frame.write(grad_mag);// commented: so currently this is not port out anymore
 }
 
-void Task::outputLocalMap(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const std::vector<double> &idp, const std::vector<double> &model)
+void Task::outputLocalMap(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const std::vector<double> &idp, const std::vector<double> &model)
 {
     /** Output the Local map **/
     ::base::samples::Pointcloud point_cloud;
@@ -2627,11 +2627,11 @@ void Task::outputLocalMap(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &k
     {
         if (model.size() == 0)
         {
-            point_cloud = keyframe->getMap(idp, model, ::mc-veo::tracking::MAP_COLOR_MODE::RED);
+            point_cloud = keyframe->getMap(idp, model, ::mc_veo::tracking::MAP_COLOR_MODE::RED);
         }
         else
         {
-            point_cloud = keyframe->getMap(idp, model, ::mc-veo::tracking::MAP_COLOR_MODE::EVENTS);
+            point_cloud = keyframe->getMap(idp, model, ::mc_veo::tracking::MAP_COLOR_MODE::EVENTS);
         }
     }
     _local_map.write(point_cloud);
@@ -2647,7 +2647,7 @@ void Task::outputKeyFrameMosaicViz(const std::vector<dso::FrameHessian*> &frame_
     for (auto &it : frame_hessians)
     {
         /** Convert FrameHessian to MinimalImage **/
-        dso::MinimalImageB3* img_b3 = mc-veo::io::toMinimalImageB3(it->dI, dso::wG[0], dso::hG[0]);
+        dso::MinimalImageB3* img_b3 = mc_veo::io::toMinimalImageB3(it->dI, dso::wG[0], dso::hG[0]);
 
         /** Draw the inverse depth points **/
         for(dso::PointHessian* ph : it->pointHessians)
@@ -2701,7 +2701,7 @@ void Task::outputImmaturePtsFrameViz(const dso::FrameHessian *input, const ::bas
     pts_img.reset(img);
 
     /** Convert FrameHessian to MinimalImage **/
-    dso::MinimalImageB3* img_b3 = mc-veo::io::toMinimalImageB3(input->dI, dso::wG[0], dso::hG[0]);
+    dso::MinimalImageB3* img_b3 = mc_veo::io::toMinimalImageB3(input->dI, dso::wG[0], dso::hG[0]);
 
     /** Draw the immature points **/
     for(dso::ImmaturePoint* ph : input->immaturePoints)
@@ -2733,13 +2733,13 @@ void Task::outputImmaturePtsFrameViz(const dso::FrameHessian *input, const ::bas
 
     /** Output inverse depth image **/
     ::base::samples::frame::Frame *pts_img_ptr = pts_img.write_access();
-    mc-veo::io::MinimalImageB3ToFrame(img_b3, timestamp, *pts_img_ptr);
+    mc_veo::io::MinimalImageB3ToFrame(img_b3, timestamp, *pts_img_ptr);
     pts_img.reset(pts_img_ptr);
     _inv_depth_frame.write(pts_img);
     delete img_b3;
 }
 
-void Task::outputDepthMap(const std::shared_ptr<::mc-veo::mapping::IDepthMap2d> &depthmap, const ::base::Time &timestamp)
+void Task::outputDepthMap(const std::shared_ptr<::mc_veo::mapping::IDepthMap2d> &depthmap, const ::base::Time &timestamp)
 {
     if (depthmap->empty()) {return;}
     base::Transform3d T_w_kf = this->pose_w_kf.getTransform();
@@ -2860,7 +2860,7 @@ void Task::getMap(std::map<int, base::samples::Pointcloud> &global_map, const bo
         /** For all the points in the keyframe **/
         for (auto p : fh->pointHessians)
         {
-            if (p->maxRelBaseline < this->mc-veo_config.mapping.points_rel_baseline)
+            if (p->maxRelBaseline < this->mc_veo_config.mapping.points_rel_baseline)
                 continue;
 
             if (p->idepth_scaled <= 0)

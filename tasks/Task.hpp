@@ -21,8 +21,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MC-VEO_TASK_TASK_HPP
-#define MC-VEO_TASK_TASK_HPP
+#ifndef MC_VEO_TASK_TASK_HPP
+#define MC_VEO_TASK_TASK_HPP
 
 #include "mc-veo/TaskBase.hpp"
 
@@ -35,7 +35,7 @@
 /** std **/
 #include <memory> //shared_pointer
 
-namespace mc-veo{
+namespace mc_veo{
 
 
     /*! \class Task
@@ -63,13 +63,13 @@ namespace mc-veo{
         int op_ev_num = 0;
 
         /** Configuration **/
-        MC-VEOConfiguration mc-veo_config;
+        MC_VEOConfiguration mc_veo_config;
 
         /** Calibration **/
-        ::mc-veo::calib::DualCamera cam_calib;
-        std::shared_ptr<::mc-veo::calib::Camera> cam0;
-        std::shared_ptr<::mc-veo::calib::Camera> cam1;
-        std::shared_ptr<::mc-veo::calib::Camera> newcam;
+        ::mc_veo::calib::DualCamera cam_calib;
+        std::shared_ptr<::mc_veo::calib::Camera> cam0;
+        std::shared_ptr<::mc_veo::calib::Camera> cam1;
+        std::shared_ptr<::mc_veo::calib::Camera> newcam;
 
         /** Indexes **/
         uint64_t ef_idx, frame_idx;
@@ -94,7 +94,7 @@ namespace mc-veo{
         std::vector<::base::samples::Event> events;
 
         /** Local Depth map **/
-        std::shared_ptr<::mc-veo::mapping::IDepthMap2d> depthmap;
+        std::shared_ptr<::mc_veo::mapping::IDepthMap2d> depthmap;
 
         /** All Frames and Keyframes History **/
         std::vector<dso::FrameShell*> all_frame_history;
@@ -113,9 +113,9 @@ namespace mc-veo{
         std::shared_ptr<::dso::CoarseInitializer> initializer;
 
         /** Event-to-Image tracker (MC-VEO)**/
-        std::shared_ptr<::mc-veo::tracking::Tracker> event_tracker;
-        std::shared_ptr<::mc-veo::tracking::KeyFrame> key_frame;
-        std::shared_ptr<::mc-veo::tracking::EventFrame> event_frame;
+        std::shared_ptr<::mc_veo::tracking::Tracker> event_tracker;
+        std::shared_ptr<::mc_veo::tracking::KeyFrame> key_frame;
+        std::shared_ptr<::mc_veo::tracking::EventFrame> event_frame;
 
         /** Image-to-Image Tracker (DSO) **/
         std::shared_ptr<::dso::CoarseTracker> image_tracker;
@@ -254,7 +254,7 @@ namespace mc-veo{
         }
 
         /** Task data loader config **/
-        ::mc-veo::DataLoaderConfig readDataLoaderConfig(YAML::Node config);
+        ::mc_veo::DataLoaderConfig readDataLoaderConfig(YAML::Node config);
 
         /** Get Input Data **/
         dso::ImageAndExposure* getImageAndExposure(const ::base::samples::frame::Frame &frame);
@@ -274,7 +274,7 @@ namespace mc-veo{
         void makeNonKeyFrame(dso::FrameHessian* fh);
         void makeKeyFrame(dso::FrameHessian* fh);
         void traceNewPoints(dso::FrameHessian* fh);
-        void makeNewTraces(dso::FrameHessian* newFrame, ::mc-veo::mapping::IDepthMap2d *depthmap);
+        void makeNewTraces(dso::FrameHessian* newFrame, ::mc_veo::mapping::IDepthMap2d *depthmap);
 
         /** Points Optimization and Backend **/
         void activatePointsMT();
@@ -319,13 +319,13 @@ namespace mc-veo{
         void outputTrackerInfo(const ::base::Time &timestamp);
 
         /** Output visuals information **/
-        void outputEventFrameViz(const std::shared_ptr<::mc-veo::tracking::EventFrame> &event_frame);
-        void outputGenerativeModelFrameViz(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp);
-        void outputInvDepthAndLocalMap(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp);
-        void outputOpticalFlowFrameViz(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp);
-        void outputGradientsFrameViz(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp);
-        void outputDepthMap(const std::shared_ptr<::mc-veo::mapping::IDepthMap2d> &depthmap, const ::base::Time &timestamp);
-        void outputLocalMap(const std::shared_ptr<::mc-veo::tracking::KeyFrame> &keyframe, const std::vector<double> &idp, const std::vector<double> &model={});
+        void outputEventFrameViz(const std::shared_ptr<::mc_veo::tracking::EventFrame> &event_frame);
+        void outputGenerativeModelFrameViz(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp);
+        void outputInvDepthAndLocalMap(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp);
+        void outputOpticalFlowFrameViz(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp);
+        void outputGradientsFrameViz(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const ::base::Time &timestamp);
+        void outputDepthMap(const std::shared_ptr<::mc_veo::mapping::IDepthMap2d> &depthmap, const ::base::Time &timestamp);
+        void outputLocalMap(const std::shared_ptr<::mc_veo::tracking::KeyFrame> &keyframe, const std::vector<double> &idp, const std::vector<double> &model={});
         void outputKeyFrameMosaicViz(const std::vector<dso::FrameHessian*> &frame_hessians, const ::base::Time &timestamp);
         void outputImmaturePtsFrameViz(const dso::FrameHessian *input, const ::base::Time &timestamp);
         void outputGlobalMap();
